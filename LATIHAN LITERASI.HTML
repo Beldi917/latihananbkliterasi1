@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asesmen Literasi Interaktif</title>
+    <!-- Memuat font Poppins dari Google Fonts untuk tampilan yang menarik -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Gaya CSS untuk tampilan yang menarik dan responsif */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* Gradien latar belakang untuk efek eye-catching */
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6e6fa 100%);
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top to prevent content jumping */
+            min-height: 100vh; /* Minimum height to cover viewport */
+            box-sizing: border-box;
+            padding: 20px; /* Padding for small screens */
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%; /* Full width on smaller screens */
+            margin: 20px auto; /* Margin for larger screens */
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-out; /* Animasi fade-in saat dimuat */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gaya untuk halaman login */
+        .login-container, .menu-container {
+            max-width: 500px;
+            width: 100%;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .login-container h2, .menu-container h2 {
+            color: #1d3557;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .login-form label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        .login-form input[type="text"] {
+            width: calc(100% - 24px); /* Full width minus padding */
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #a8dadc;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-form input[type="text"]:focus {
+            border-color: #457b9d;
+            outline: none;
+            box-shadow: 0 0 8px rgba(69, 123, 157, 0.4);
+        }
+
+        .login-form button, .menu-container button {
+            background-color: #457b9d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(69, 123, 157, 0.3);
+            width: auto; /* Override default button width */
+            display: inline-block; /* Allow centering */
+        }
+
+        .login-form button:hover, .menu-container button:not(:disabled):hover {
+            background-color: #1d3557;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(29, 53, 87, 0.4);
+        }
+
+        .error-message {
+            color: #d9534f;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+        }
+
+        /* Gaya untuk menu latihan */
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .menu-button {
+            background-color: #a8dadc;
+            color: #1d3557;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            /* text-align: left; REMOVED: Handled by flex content */
+            display: flex;
+            /* justify-content: space-between; REMOVED: This caused the imbalance */
+            align-items: center;
+            min-height: 60px; /* Memberikan tinggi minimum agar seragam */
+            line-height: 1.3; /* Mengatur line-height untuk teks utama */
+        }
+
+        .menu-button:hover:not(:disabled) {
+            background-color: #457b9d;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-button:disabled {
+            background-color: #e0e0e0;
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+
+        .menu-button .button-text { /* Tambahkan span baru untuk teks utama */
+            flex-grow: 1; /* Memungkinkan teks utama mengambil ruang yang tersedia */
+            min-width: 0; /* Penting untuk flex item yang berisi teks panjang */
+            text-align: left; /* Pastikan teks tetap rata kiri */
+            margin-right: 10px; /* Memberi jarak minimal antara teks dan indikator */
+        }
+
+        .menu-button .status-indicator {
+            font-size: 0.8em;
+            font-weight: 400;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: rgba(0,0,0,0.1);
+            color: #333;
+            flex-shrink: 0; /* Mencegah indikator menyusut */
+            /* margin-left: 10px; REMOVED: Now handled by button-text's margin-right */
+            align-self: center; /* Memastikan vertikal tengah */
+        }
+
+        .menu-button.unlocked .status-indicator {
+            background-color: #c3e6cb;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .menu-button.completed .status-indicator {
+            background-color: #a2d2ff;
+            color: #1d3557;
+            font-weight: 600;
+        }
+
+        /* Gaya untuk bagian kuis */
+        .page-content {
+            display: none; /* Sembunyikan semua konten halaman secara default */
+        }
+
+        header h1 {
+            color: #1d3557;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        header h2 {
+            color: #457b9d;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .story-section {
+            background-color: #f8fcfd;
+            border: 1px solid #e0f2f7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .story-section h3 {
+            color: #1d3557;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 1px dashed #457b9d;
+            padding-bottom: 10px;
+        }
+
+        .story-content p {
+            margin-bottom: 10px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+
+        .quiz-section h3 {
+            color: #1d3557;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 1px dashed #a8dadc;
+            padding-bottom: 10px;
+        }
+
+        .question-block {
+            background-color: #f0f8ff;
+            border: 1px solid #d4eaf5;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .question-block:hover {
+            transform: translateY(-3px);
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #34495e;
+            font-size: 1.1em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        label:hover {
+            background-color: #eaf6fc;
+            transform: translateX(3px);
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2); /* Sedikit lebih besar untuk kemudahan sentuh */
+            vertical-align: middle;
+            accent-color: #457b9d; /* Warna checkbox/radio button */
+        }
+
+        /* Input text untuk isian singkat */
+        .quiz-section input[type="text"] {
+            padding: 10px 12px;
+            border: 1px solid #a8dadc;
+            border-radius: 8px;
+            width: calc(100% - 24px); /* Full width minus padding */
+            max-width: 400px; /* Batasi lebar maksimum */
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .quiz-section input[type="text"]:focus {
+            border-color: #457b9d;
+            outline: none;
+            box-shadow: 0 0 8px rgba(69, 123, 157, 0.4);
+        }
+
+        .quiz-button { /* Tombol untuk submit kuis */
+            background-color: #457b9d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(69, 123, 157, 0.3);
+        }
+
+        .quiz-button:hover {
+            background-color: #1d3557;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(29, 53, 87, 0.4);
+        }
+
+        .quiz-result {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .quiz-result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .quiz-result.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .quiz-result.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Gaya untuk soal menjodohkan */
+        .matching-question {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .matching-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* Kolom untuk item kiri, panah/penghubung, dan dropdown kanan */
+            align-items: center;
+            gap: 10px;
+            background-color: #eaf6fc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .matching-row span {
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .matching-row select {
+            padding: 8px;
+            border: 1px solid #a8dadc;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95em;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .matching-row select:focus {
+            border-color: #457b9d;
+            outline: none;
+            box-shadow: 0 0 5px rgba(69, 123, 157, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #a8dadc;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .container, .login-container, .menu-container {
+                margin: 15px;
+                padding: 20px;
+            }
+
+            header h1, .login-container h2, .menu-container h2 {
+                font-size: 1.8em;
+            }
+
+            header h2 {
+                font-size: 1.2em;
+            }
+
+            .question-block {
+                padding: 15px;
+            }
+
+            .question-text {
+                font-size: 1em;
+            }
+
+            label {
+                font-size: 0.95em;
+                padding: 6px 8px;
+            }
+
+            input[type="radio"],
+            input[type="checkbox"] {
+                transform: scale(1.1);
+                margin-right: 10px;
+            }
+
+            .login-form button, .menu-container button, .quiz-button {
+                padding: 10px 20px;
+                font-size: 1em;
+                width: 100%; /* Tombol lebar penuh di layar kecil */
+                max-width: 280px;
+            }
+
+            .matching-row {
+                grid-template-columns: 1fr 1fr; /* Ubah tata letak di layar kecil */
+            }
+            .matching-row .arrow {
+                display: none; /* Sembunyikan panah di layar kecil jika terlalu sempit */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container, .login-container, .menu-container {
+                margin: 10px;
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            header h1, .login-container h2, .menu-container h2 {
+                font-size: 1.5em;
+            }
+
+            header h2 {
+                font-size: 1em;
+            }
+
+            .story-content, .question-block {
+                font-size: 0.9em;
+            }
+
+            .login-form input[type="text"], .quiz-section input[type="text"] {
+                width: calc(100% - 20px); /* Menyesuaikan padding */
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Halaman Login -->
+    <div class="login-container page-content" id="loginPage">
+        <h2>Selamat Datang di Asesmen Literasi & Numerasi</h2>
+        <form id="loginForm" class="login-form">
+            <label for="fullName">Nama Lengkap <span style="color: red;">*</span></label>
+            <input type="text" id="fullName" placeholder="Masukkan Nama Lengkap Anda" required>
+
+            <label for="studentId">Nomor Induk (Opsional)</label>
+            <input type="text" id="studentId" placeholder="Masukkan Nomor Induk Anda">
+
+            <div id="loginError" class="error-message">Nama Lengkap tidak boleh kosong.</div>
+
+            <button type="submit">Mulai Asesmen</button>
+        </form>
+    </div>
+
+    <!-- Halaman Menu Latihan -->
+    <div class="menu-container page-content" id="latihanMenuPage">
+        <h2>Pilih Latihan Literasi</h2>
+        <div class="menu-options">
+            <button class="menu-button" id="btnLatihan1" data-latihan-id="latihan1">
+                <span class="button-text">Latihan 1: Burung Pipit yang Bijak</span>
+                <span class="status-indicator" id="statusLatihan1">Mulai</span>
+            </button>
+            <button class="menu-button" id="btnLatihan2" data-latihan-id="latihan2" disabled>
+                <span class="button-text">Latihan 2: Kisah Semut dan Belalang</span>
+                <span class="status-indicator" id="statusLatihan2">Terkunci</span>
+            </button>
+            <button class="menu-button" id="btnLatihan3" data-latihan-id="latihan3" disabled>
+                <span class="button-text">Latihan 3: Petualangan Kucing Oren dan Tikus Cerdik</span>
+                <span class="status-indicator" id="statusLatihan3">Terkunci</span>
+            </button>
+            <button class="menu-button" id="btnLatihan4" data-latihan-id="latihan4" disabled>
+                <span class="button-text">Latihan 4: Tupai Cerdas dan Burung Hantu Bijaksana</span>
+                <span class="status-indicator" id="statusLatihan4">Terkunci</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Konten Asesmen Latihan 1 -->
+    <div class="container page-content" id="latihan1Quiz">
+        <header>
+            <h1>Asesmen Literasi & Numerasi</h1>
+            <h2>Latihan 1: Burung Pipit yang Bijak</h2>
+        </header>
+        <main>
+            <section class="story-section">
+                <h3>Kisah Burung Pipit yang Bijak</h3>
+                <div class="story-content">
+                    <p>Suatu hari musim kemarau yang panjang melanda sebuah hutan. Burung-burung pun kesulitan mencari air.</p>
+                    <p>Seekor burung pipit melihat kendi berisi air, namun airnya sangat sedikit dan berada di dasar.</p>
+                    <p>Pipit pun memungut kerikil satu per satu dan memasukkannya ke dalam kendi. Lama-lama air naik ke permukaan dan pipit bisa minum. Burung pipit lalu memanggil teman-temannya untuk ikut minum bersama.</p>
+                    <p>Mereka pun bahagia karena bisa saling berbagi.</p>
+                </div>
+            </section>
+
+            <section class="quiz-section">
+                <h3>Soal Pilihan Ganda</h3>
+                <form id="quizFormPG1">
+                    <!-- Soal PG 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Apa masalah yang dihadapi burung pipit dalam cerita?</p>
+                        <label><input type="radio" name="pg1_1" value="A"> A. Hujan deras</label>
+                        <label><input type="radio" name="pg1_1" value="B"> B. Kehilangan makanan</label>
+                        <label><input type="radio" name="pg1_1" value="C"> C. Tidak ada air untuk diminum</label>
+                        <label><input type="radio" name="pg1_1" value="D"> D. Dikejar pemangsa</label>
+                    </div>
+
+                    <!-- Soal PG 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Bagaimana cara burung pipit mendapatkan air?</p>
+                        <label><input type="radio" name="pg1_2" value="A"> A. Terbang ke sungai</label>
+                        <label><input type="radio" name="pg1_2" value="B"> B. Menggali tanah</label>
+                        <label><input type="radio" name="pg1_2" value="C"> C. Memanggil teman-teman</label>
+                        <label><input type="radio" name="pg1_2" value="D"> D. Memasukkan kerikil ke kendi</label>
+                    </div>
+
+                    <!-- Soal PG 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Sifat burung pipit dalam cerita adalah ...</p>
+                        <label><input type="radio" name="pg1_3" value="A"> A. Malas</label>
+                        <label><input type="radio" name="pg1_3" value="B"> B. Pintar dan dermawan</label>
+                        <label><input type="radio" name="pg1_3" value="C"> C. Licik</label>
+                        <label><input type="radio" name="pg1_3" value="D"> D. Pemarah</label>
+                    </div>
+
+                    <!-- Soal PG 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Apa pelajaran dari cerita ini?</p>
+                        <label><input type="radio" name="pg1_4" value="A"> A. Lebih baik sendiri daripada bersama</label>
+                        <label><input type="radio" name="pg1_4" value="B"> B. Kita harus saling iri</label>
+                        <label><input type="radio" name="pg1_4" value="C"> C. Menolong dan berbagi itu baik</label>
+                        <label><input type="radio" name="pg1_4" value="D"> D. Jangan mempercayai siapa pun</label>
+                    </div>
+
+                    <!-- Soal PG 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Judul yang paling tepat untuk cerita ini adalah</p>
+                        <label><input type="radio" name="pg1_5" value="A"> A. Musim Kemarau Panjang</label>
+                        <label><input type="radio" name="pg1_5" value="B"> B. Burung Pipit dan Kendi</label>
+                        <label><input type="radio" name="pg1_5" value="C"> C. Air Ajaib</label>
+                        <label><input type="radio" name="pg1_5" value="D"> D. Burung yang Malas</label>
+                    </div>
+
+                    <!-- Soal PG 6 -->
+                    <div class="question-block">
+                        <p class="question-text">6. Apa yang terjadi setelah air naik ke permukaan kendi?</p>
+                        <label><input type="radio" name="pg1_6" value="A"> A. Pipit terbang pergi</label>
+                        <label><input type="radio" name="pg1_6" value="B"> B. Pipit tidur di bawah pohon</label>
+                        <label><input type="radio" name="pg1_6" value="C"> C. Pipit bisa minum air dari kendi</label>
+                        <label><input type="radio" name="pg1_6" value="D"> D. Pipit membawa kendi ke sarangnya</label>
+                    </div>
+
+                    <!-- Soal PG 7 -->
+                    <div class="question-block">
+                        <p class="question-text">7. Kata "berbagi" dalam cerita menunjukkan sikap</p>
+                        <label><input type="radio" name="pg1_7" value="A"> A. Serakah</label>
+                        <label><input type="radio" name="pg1_7" value="B"> B. Egois</label>
+                        <label><input type="radio" name="pg1_7" value="C"> C. Suka menolong</label>
+                        <label><input type="radio" name="pg1_7" value="D"> D. Tidak peduli</label>
+                    </div>
+
+                    <!-- Soal PG 8 -->
+                    <div class="question-block">
+                        <p class="question-text">8. Siapakah tokoh utama dalam cerita tersebut?</p>
+                        <label><input type="radio" name="pg1_8" value="A"> A. Kendi</label>
+                        <label><input type="radio" name="pg1_8" value="B"> B. Burung pipit</label>
+                        <label><input type="radio" name="pg1_8" value="C"> C. Hutan</label>
+                        <label><input type="radio" name="pg1_8" value="D"> D. Burung lain</label>
+                    </div>
+
+                    <!-- Soal PG 9 -->
+                    <div class="question-block">
+                        <p class="question-text">9. Mengapa kendi dalam cerita dianggap sebagai tantangan?</p>
+                        <label><input type="radio" name="pg1_9" value="A"> A. Karena airnya penuh</label>
+                        <label><input type="radio" name="pg1_9" value="B"> B. Karena isinya makanan</label>
+                        <label><input type="radio" name="pg1_9" value="C"> C. Karena tidak mudah dijangkau airnya</label>
+                        <label><input type="radio" name="pg1_9" value="D"> D. Karena pecah</label>
+                    </div>
+
+                    <!-- Soal PG 10 -->
+                    <div class="question-block">
+                        <p class="question-text">10. Cerita ini termasuk ke dalam jenis teks</p>
+                        <label><input type="radio" name="pg1_10" value="A"> A. Puisi</label>
+                        <label><input type="radio" name="pg1_10" value="B"> B. Iklan</label>
+                        <label><input type="radio" name="pg1_10" value="C"> C. Cerita Fiksi</label>
+                        <label><input type="radio" name="pg1_10" value="D"> D. Artikel Ilmiah</label>
+                    </div>
+
+                    <!-- Soal PG 11 -->
+                    <div class="question-block">
+                        <p class="question-text">11. Kata "melanda" dalam kalimat "musim kemarau yang panjang melanda hutan" artinya ...</p>
+                        <label><input type="radio" name="pg1_11" value="A"> A. Melukis</label>
+                        <label><input type="radio" name="pg1_11" value="B"> B. Menghampiri dengan keras</label>
+                        <label><input type="radio" name="pg1_11" value="C"> C. Membasahi</label>
+                        <label><input type="radio" name="pg1_11" value="D"> D. Menghibur</label>
+                    </div>
+
+                    <!-- Soal PG 12 -->
+                    <div class="question-block">
+                        <p class="question-text">12. Cerita tersebut paling sesuai disampaikan pada kegiatan ...</p>
+                        <label><input type="radio" name="pg1_12" value="A"> A. Pelajaran matematika</label>
+                        <label><input type="radio" name="pg1_12" value="B"> B. Dongeng sore hari</label>
+                        <label><input type="radio" name="pg1_12" value="C"> C. Olahraga pagi</label>
+                        <label><input type="radio" name="pg1_12" value="D"> D. Prakarya</label>
+                    </div>
+
+                    <!-- Soal PG 13 -->
+                    <div class="question-block">
+                        <p class="question-text">13. Cara burung pipit menyelesaikan masalahnya menunjukkan bahwa ia ...</p>
+                        <label><input type="radio" name="pg1_13" value="A"> A. Cepat putus asa</label>
+                        <label><input type="radio" name="pg1_13" value="B"> B. Menyerah sebelum mencoba</label>
+                        <label><input type="radio" name="pg1_13" value="C"> C. Mampu berpikir kreatif</label>
+                        <label><input type="radio" name="pg1_13" value="D"> D. Mengandalkan hewan lain</label>
+                    </div>
+
+                    <!-- Soal PG 14 -->
+                    <div class="question-block">
+                        <p class="question-text">14. Kalimat yang menunjukkan bahwa burung pipit peduli adalah ...</p>
+                        <label><input type="radio" name="pg1_14" value="A"> A. "Pipit meminum air itu diam-diam"</label>
+                        <label><input type="radio" name="pg1_14" value="B"> B. "Ia terbang menjauh"</label>
+                        <label><input type="radio" name="pg1_14" value="C"> C. "Ia memanggil teman-temannya untuk ikut minum"</label>
+                        <label><input type="radio" name="pg1_14" value="D"> D. "Ia menyimpan air untuk dirinya"</label>
+                    </div>
+
+                    <!-- Soal PG 15 -->
+                    <div class="question-block">
+                        <p class="question-text">15. Apa perasaan pipit saat melihat kendi pertama kali?</p>
+                        <label><input type="radio" name="pg1_15" value="A"> A. Bahagia</label>
+                        <label><input type="radio" name="pg1_15" value="B"> B. Bingung</label>
+                        <label><input type="radio" name="pg1_15" value="C"> C. Marah</label>
+                        <label><input type="radio" name="pg1_15" value="D"> D. Tidak peduli</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan1', 'PG')">Periksa Jawaban Pilihan Ganda</button>
+                    <div id="resultPG1" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Pilihan Ganda Kompleks</h3>
+                <form id="quizFormPGK1">
+                    <!-- Soal PGK 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Apa saja yang dilakukan burung pipit untuk mengatasi masalahnya? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_1" value="A"> Mengambil kerikil</label>
+                        <label><input type="checkbox" name="pgk1_1" value="B"> Menangis keras</label>
+                        <label><input type="checkbox" name="pgk1_1" value="C"> Memasukkan kerikil ke dalam kendi</label>
+                        <label><input type="checkbox" name="pgk1_1" value="D"> Memecahkan kendi</label>
+                    </div>
+
+                    <!-- Soal PGK 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Nilai karakter apa yang ditunjukkan oleh burung pipit? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_2" value="A"> Kerja keras</label>
+                        <label><input type="checkbox" name="pgk1_2" value="B"> Kepedulian</label>
+                        <label><input type="checkbox" name="pgk1_2" value="C"> Kesombongan</label>
+                        <label><input type="checkbox" name="pgk1_2" value="D"> Kemarahan</label>
+                    </div>
+
+                    <!-- Soal PGK 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Tindakan burung pipit sesuai dengan prinsip (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_3" value="A"> Kreativitas</label>
+                        <label><input type="checkbox" name="pgk1_3" value="B"> Saling berbagi</label>
+                        <label><input type="checkbox" name="pgk1_3" value="C"> Membalas dendam</label>
+                        <label><input type="checkbox" name="pgk1_3" value="D"> Keegoisan</label>
+                    </div>
+
+                    <!-- Soal PGK 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Cerita ini mengajarkan kita untuk (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_4" value="A"> Tidak mudah menyerah</label>
+                        <label><input type="checkbox" name="pgk1_4" value="B"> Menolong sesama</label>
+                        <label><input type="checkbox" name="pgk1_4" value="C"> Menghindari tanggung jawab</label>
+                        <label><input type="checkbox" name="pgk1_4" value="D"> Menyimpan semua untuk diri sendiri</label>
+                    </div>
+
+                    <!-- Soal PGK 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Ciri-ciri cerita fiksi dalam teks di atas adalah (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_5" value="A"> Mengandung tokoh dan peristiwa</label>
+                        <label><input type="checkbox" name="pgk1_5" value="B"> Memiliki pesan moral</label>
+                        <label><input type="checkbox" name="pgk1_5" value="C"> Berisi data dan fakta ilmiah</label>
+                        <label><input type="checkbox" name="pgk1_5" value="D"> Ditulis dalam bentuk laporan</label>
+                    </div>
+
+                     <!-- Soal PGK 6 (Nomor 11 di PDF) -->
+                     <div class="question-block">
+                        <p class="question-text">6. Apa akibat dari tindakan pipit mengundang teman-temannya? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_6" value="A"> Mereka semua bisa minum</label>
+                        <label><input type="checkbox" name="pgk1_6" value="B"> Mereka merasa senang</label>
+                        <label><input type="checkbox" name="pgk1_6" value="C"> Pipit menjadi kesal</label>
+                        <label><input type="checkbox" name="pgk1_6" value="D"> Air dalam kendi membeku</label>
+                    </div>
+
+                     <!-- Soal PGK 7 (Nomor 12 di PDF) -->
+                     <div class="question-block">
+                        <p class="question-text">7. Mengapa cerita ini bisa menarik untuk anak-anak? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_7" value="A"> Tokohnya adalah binatang</label>
+                        <label><input type="checkbox" name="pgk1_7" value="B"> Ada pesan moralnya</label>
+                        <label><input type="checkbox" name="pgk1_7" value="C"> Penuh kekerasan</label>
+                        <label><input type="checkbox" name="pgk1_7" value="D"> Hanya berisi angka</label>
+                    </div>
+
+                     <!-- Soal PGK 8 (Nomor 13 di PDF) -->
+                     <div class="question-block">
+                        <p class="question-text">8. Hal apa saja yang bisa kamu lakukan agar menjadi seperti pipit? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_8" value="A"> Berbagi dengan teman</label>
+                        <label><input type="checkbox" name="pgk1_8" value="B"> Berpikir untuk solusi</label>
+                        <label><input type="checkbox" name="pgk1_8" value="C"> Diam saat teman kesulitan</label>
+                        <label><input type="checkbox" name="pgk1_8" value="D"> Mengejek teman yang gagal</label>
+                    </div>
+
+                     <!-- Soal PGK 9 (Nomor 14 di PDF) -->
+                     <div class="question-block">
+                        <p class="question-text">9. Cerita fiksi biasanya memiliki: (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_9" value="A"> Tokoh</label>
+                        <label><input type="checkbox" name="pgk1_9" value="B"> Alur cerita</label>
+                        <label><input type="checkbox" name="pgk1_9" value="C"> Tabel dan grafik</label>
+                        <label><input type="checkbox" name="pgk1_9" value="D"> Rumus</label>
+                    </div>
+
+                    <!-- Soal PGK 10 (Nomor 15 di PDF) -->
+                    <div class="question-block">
+                        <p class="question-text">10. Cerita burung pipit mengajarkan bahwa saat menghadapi masalah kita harus ... (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_10" value="A"> Tidak mudah menyerah</label>
+                        <label><input type="checkbox" name="pgk1_10" value="B"> Mencari solusi dengan berpikir</label>
+                        <label><input type="checkbox" name="pgk1_10" value="C"> Langsung meminta tolong</label>
+                        <label><input type="checkbox" name="pgk1_10" value="D"> Lari dari tanggung jawab</label>
+                    </div>
+
+                    <!-- Soal PGK 11 (Nomor 16 di PDF) -->
+                    <div class="question-block">
+                        <p class="question-text">11. Dari cerita tersebut, kita belajar bahwa ... (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_11" value="A"> Kerja keras akan membuahkan hasil</label>
+                        <label><input type="checkbox" name="pgk1_11" value="B"> Kepedulian itu penting</label>
+                        <label><input type="checkbox" name="pgk1_11" value="C"> Menunggu bantuan lebih baik</label>
+                        <label><input type="checkbox" name="pgk1_11" value="D"> Harus menghindari teman</label>
+                    </div>
+
+                    <!-- Soal PGK 12 (Nomor 17 di PDF) -->
+                    <div class="question-block">
+                        <p class="question-text">12. Mengapa pipit tidak langsung menyerah saat melihat air di dasar kendi? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_12" value="A"> Ia berpikir keras mencari solusi</label>
+                        <label><input type="checkbox" name="pgk1_12" value="B"> Ia percaya pasti ada cara</label>
+                        <label><input type="checkbox" name="pgk1_12" value="C"> Ia tidak haus</label>
+                        <label><input type="checkbox" name="pgk1_12" value="D"> Ia takut pada kendi</label>
+                    </div>
+
+                    <!-- Soal PGK 13 (Nomor 18 di PDF) -->
+                    <div class="question-block">
+                        <p class="question-text">13. Ciri-ciri tokoh utama cerita ini adalah ... (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_13" value="A"> Cerdik</label>
+                        <label><input type="checkbox" name="pgk1_13" value="B"> Suka membantu</label>
+                        <label><input type="checkbox" name="pgk1_13" value="C"> Pemalas</label>
+                        <label><input type="checkbox" name="pgk1_13" value="D"> Penakut</label>
+                    </div>
+
+                    <!-- Soal PGK 14 (Nomor 19 di PDF) -->
+                    <div class="question-block">
+                        <p class="question-text">14. Hal-hal yang bisa dilakukan siswa agar seperti pipit: (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_14" value="A"> Menolong teman yang kesusahan</label>
+                        <label><input type="checkbox" name="pgk1_14" value="B"> Suka berbagi saat istirahat</label>
+                        <label><input type="checkbox" name="pgk1_14" value="C"> Menghindar saat tugas kelompok</label>
+                        <label><input type="checkbox" name="pgk1_14" value="D"> Mengerjakan tugas sendirian saja</label>
+                    </div>
+
+                    <!-- Soal PGK 15 (Nomor 20 di PDF) -->
+                    <div class="question-block">
+                        <p class="question-text">15. Kalimat berikut yang sesuai dengan isi cerita: (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk1_15" value="A"> Pipit memasukkan kerikil agar air naik</label>
+                        <label><input type="checkbox" name="pgk1_15" value="B"> Pipit mengajak teman-temannya minum bersama</label>
+                        <label><input type="checkbox" name="pgk1_15" value="C"> Pipit membuang kendi</label>
+                        <label><input type="checkbox" name="pgk1_15" value="D"> Pipit pergi meninggalkan kendi</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan1', 'PGK')">Periksa Jawaban Pilihan Ganda Kompleks</button>
+                    <div id="resultPGK1" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Isian Singkat</h3>
+                <form id="quizFormIsian1">
+                    <!-- Soal Isian 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Burung pipit memasukkan <input type="text" id="isian1_1" name="isian1_1"> ke dalam kendi agar air bisa diminum.</p>
+                    </div>
+
+                    <!-- Soal Isian 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Cerita di atas terjadi pada musim <input type="text" id="isian1_2" name="isian1_2">.</p>
+                    </div>
+
+                    <!-- Soal Isian 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Burung pipit menunjukkan sikap <input type="text" id="isian1_3" name="isian1_3"> kepada teman-temannya.</p>
+                    </div>
+
+                    <!-- Soal Isian 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Cerita ini menunjukkan pentingnya <input type="text" id="isian1_4" name="isian1_4"> dalam menghadapi masalah.</p>
+                    </div>
+
+                    <!-- Soal Isian 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Setelah air naik ke permukaan, burung pipit pun merasa <input type="text" id="isian1_5" name="isian1_5">.</p>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan1', 'Isian')">Periksa Jawaban Isian Singkat</button>
+                    <div id="resultIsian1" class="quiz-result"></div>
+                    <button type="button" class="quiz-button" onclick="goToMenu()">Kembali ke Menu Latihan</button>
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Asesmen Literasi & Numerasi. Semua Hak Dilindungi.</p>
+        </footer>
+    </div>
+
+    <!-- Konten Asesmen Latihan 2 -->
+    <div class="container page-content" id="latihan2Quiz">
+        <header>
+            <h1>Asesmen Literasi & Numerasi</h1>
+            <h2>Latihan 2: Kisah Semut dan Belalang</h2>
+        </header>
+        <main>
+            <section class="story-section">
+                <h3>Kisah Semut dan Belalang</h3>
+                <div class="story-content">
+                    <p>Di suatu musim panas yang cerah, seekor belalang menghabiskan waktunya dengan bernyanyi dan bermain. Ia melihat sekumpulan semut yang sibuk mengumpulkan makanan dan membawanya ke sarang mereka.</p>
+                    <p>"Hai, Semut! Mengapa kalian bekerja begitu keras di hari secerah ini? Ayo, nikmati hidup!" seru Belalang.</p>
+                    <p>Semut menjawab, "Kami sedang mengumpulkan persediaan makanan untuk musim dingin, Belalang. Jika tidak, kami akan kelaparan saat salju turun."</p>
+                    <p>Belalang hanya tertawa. "Musim dingin masih lama! Aku akan bersantai saja sekarang."</p>
+                    <p>Musim panas berlalu, berganti musim gugur, dan akhirnya musim dingin tiba. Salju turun tebal, menutupi seluruh tanah. Belalang mulai kelaparan. Ia tidak punya makanan sama sekali. Dengan tubuh menggigil dan perut lapar, ia teringat pada para Semut.</p>
+                    <p>Belalang pun pergi ke sarang Semut dan mengetuk pintu. "Tolong, Semut! Aku kelaparan. Bisakah kalian memberiku sedikit makanan?"</p>
+                    <p>Semut-semut yang hangat dan kenyang di dalam sarang melihat Belalang. Pemimpin Semut berkata, "Kami sudah memperingatkanmu, Belalang. Kami bekerja keras saat musim panas, dan sekarang kami bisa menikmati hasilnya. Kami tidak bisa memberimu makanan, karena kami juga harus bertahan hidup."</p>
+                    <p>Belalang sangat menyesal. Ia belajar pelajaran penting tentang kerja keras dan persiapan.</p>
+                </div>
+            </section>
+
+            <section class="quiz-section">
+                <h3>Soal Pilihan Ganda Latihan 2</h3>
+                <form id="quizFormPG2">
+                    <!-- Soal PG Latihan 2 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Apa yang dilakukan Belalang di musim panas?</p>
+                        <label><input type="radio" name="pg2_1" value="A"> A. Bekerja keras</label>
+                        <label><input type="radio" name="pg2_1" value="B"> B. Mengumpulkan makanan</label>
+                        <label><input type="radio" name="pg2_1" value="C"> C. Bernyanyi dan bermain</label>
+                        <label><input type="radio" name="pg2_1" value="D"> D. Tidur di sarang</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Apa yang dilakukan Semut di musim panas?</p>
+                        <label><input type="radio" name="pg2_2" value="A"> A. Bersantai</label>
+                        <label><input type="radio" name="pg2_2" value="B"> B. Bermain musik</label>
+                        <label><input type="radio" name="pg2_2" value="C"> C. Mengumpulkan makanan</label>
+                        <label><input type="radio" name="pg2_2" value="D"> D. Tidur</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Mengapa Semut mengumpulkan makanan?</p>
+                        <label><input type="radio" name="pg2_3" value="A"> A. Untuk berpesta</label>
+                        <label><input type="radio" name="pg2_3" value="B"> B. Untuk musim dingin</label>
+                        <label><input type="radio" name="pg2_3" value="C"> C. Untuk dibuang</label>
+                        <label><input type="radio" name="pg2_3" value="D"> D. Untuk bermain</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Bagaimana sikap Belalang saat Semut bekerja?</p>
+                        <label><input type="radio" name="pg2_4" value="A"> A. Menolong</label>
+                        <label><input type="radio" name="pg2_4" value="B"> B. Mengolok-olok</label>
+                        <label><input type="radio" name="pg2_4" value="C"> C. Ikut bekerja</label>
+                        <label><input type="radio" name="pg2_4" value="D"> D. Memuji</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Musim apa yang membuat Belalang kelaparan?</p>
+                        <label><input type="radio" name="pg2_5" value="A"> A. Musim panas</label>
+                        <label><input type="radio" name="pg2_5" value="B"> B. Musim gugur</label>
+                        <label><input type="radio" name="pg2_5" value="C"> C. Musim semi</label>
+                        <label><input type="radio" name="pg2_5" value="D"> D. Musim dingin</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 6 -->
+                    <div class="question-block">
+                        <p class="question-text">6. Apa yang terjadi pada Belalang saat musim dingin tiba?</p>
+                        <label><input type="radio" name="pg2_6" value="A"> A. Ia punya banyak makanan</label>
+                        <label><input type="radio" name="pg2_6" value="B"> B. Ia kelaparan</label>
+                        <label><input type="radio" name="pg2_6" value="C"> C. Ia pergi berlibur</label>
+                        <label><input type="radio" name="pg2_6" value="D"> D. Ia menemukan harta karun</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 7 -->
+                    <div class="question-block">
+                        <p class="question-text">7. Ke mana Belalang pergi saat kelaparan?</p>
+                        <label><input type="radio" name="pg2_7" value="A"> A. Ke rumah tetangga</label>
+                        <label><input type="radio" name="pg2_7" value="B"> B. Ke sarang Semut</label>
+                        <label><input type="radio" name="pg2_7" value="C"> C. Ke sungai</label>
+                        <label><input type="radio" name="pg2_7" value="D"> D. Ke pasar</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 8 -->
+                    <div class="question-block">
+                        <p class="question-text">8. Apa jawaban Pemimpin Semut kepada Belalang?</p>
+                        <label><input type="radio" name="pg2_8" value="A"> A. Memberi banyak makanan</label>
+                        <label><input type="radio" name="pg2_8" value="B"> B. Menolak memberi makanan</label>
+                        <label><input type="radio" name="pg2_8" value="C"> C. Mengajak bermain</label>
+                        <label><input type="radio" name="pg2_8" value="D"> D. Meminta Belalang bernyanyi</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 9 -->
+                    <div class="question-block">
+                        <p class="question-text">9. Apa pelajaran penting yang didapat Belalang?</p>
+                        <label><input type="radio" name="pg2_9" value="A"> A. Bermain itu lebih penting</label>
+                        <label><input type="radio" name="pg2_9" value="B"> B. Kerja keras dan persiapan itu penting</label>
+                        <label><input type="radio" name="pg2_9" value="C"> C. Hanya Semut yang harus bekerja</label>
+                        <label><input type="radio" name="pg2_9" value="D"> D. Meminta-minta itu mudah</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 10 -->
+                    <div class="question-block">
+                        <p class="question-text">10. Siapakah tokoh utama dalam cerita ini?</p>
+                        <label><input type="radio" name="pg2_10" value="A"> A. Semut dan Belalang</label>
+                        <label><input type="radio" name="pg2_10" value="B"> B. Musim panas</label>
+                        <label><input type="radio" name="pg2_10" value="C"> C. Sarang</label>
+                        <label><input type="radio" name="pg2_10" value="D"> D. Makanan</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 11 -->
+                    <div class="question-block">
+                        <p class="question-text">11. Kata "persediaan" dalam cerita berarti...</p>
+                        <label><input type="radio" name="pg2_11" value="A"> A. Sesuatu yang dibuang</label>
+                        <label><input type="radio" name="pg2_11" value="B"> B. Sisa makanan</label>
+                        <label><input type="radio" name="pg2_11" value="C"> C. Barang yang disimpan untuk nanti</label>
+                        <label><input type="radio" name="pg2_11" value="D"> D. Barang yang dijual</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 12 -->
+                    <div class="question-block">
+                        <p class="question-text">12. Apa pesan moral utama dari cerita ini?</p>
+                        <label><input type="radio" name="pg2_12" value="A"> A. Hidup harus dinikmati tanpa peduli masa depan</label>
+                        <label><input type="radio" name="pg2_12" value="B"> B. Selalu meminta bantuan orang lain</label>
+                        <label><input type="radio" name="pg2_12" value="C"> C. Pentingnya menabung dan bersiap untuk masa depan</label>
+                        <label><input type="radio" name="pg2_12" value="D"> D. Jangan percaya pada siapa pun</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 13 -->
+                    <div class="question-block">
+                        <p class="question-text">13. Bagaimana perasaan Belalang di akhir cerita?</p>
+                        <label><input type="radio" name="pg2_13" value="A"> A. Senang</label>
+                        <label><input type="radio" name="pg2_13" value="B"> B. Marah</label>
+                        <label><input type="radio" name="pg2_13" value="C"> C. Menyesal</label>
+                        <label><input type="radio" name="pg2_13" value="D"> D. Bingung</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 14 -->
+                    <div class="question-block">
+                        <p class="question-text">14. Jika Belalang bekerja keras di musim panas, apa yang akan terjadi padanya di musim dingin?</p>
+                        <label><input type="radio" name="pg2_14" value="A"> A. Ia akan tetap kelaparan</label>
+                        <label><input type="radio" name="pg2_14" value="B"> B. Ia akan memiliki cukup makanan</label>
+                        <label><input type="radio" name="pg2_14" value="C"> C. Ia akan tidur sepanjang hari</label>
+                        <label><input type="radio" name="pg2_14" value="D"> D. Ia akan pergi ke tempat lain</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 2 - 15 -->
+                    <div class="question-block">
+                        <p class="question-text">15. Cerita ini mengajarkan tentang pentingnya...</p>
+                        <label><input type="radio" name="pg2_15" value="A"> A. Kemewahan</label>
+                        <label><input type="radio" name="pg2_15" value="B"> B. Kesenangan sesaat</label>
+                        <label><input type="radio" name="pg2_15" value="C"> C. Tanggung jawab dan perencanaan</label>
+                        <label><input type="radio" name="pg2_15" value="D"> D. Kekuatan fisik</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan2', 'PG')">Periksa Jawaban Pilihan Ganda Latihan 2</button>
+                    <div id="resultPG2" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Pilihan Ganda Kompleks Latihan 2</h3>
+                <form id="quizFormPGK2">
+                    <!-- Soal PGK Latihan 2 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Apa perbedaan sikap antara Semut dan Belalang di musim panas? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_1" value="A"> Semut sibuk mengumpulkan makanan</label>
+                        <label><input type="checkbox" name="pgk2_1" value="B"> Belalang bernyanyi dan bermain</label>
+                        <label><input type="checkbox" name="pgk2_1" value="C"> Semut bermalas-malasan</label>
+                        <label><input type="checkbox" name="pgk2_1" value="D"> Belalang membantu Semut</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Mengapa Semut menolak memberikan makanan kepada Belalang? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_2" value="A"> Mereka tidak punya cukup makanan untuk dibagikan</label>
+                        <label><input type="checkbox" name="pgk2_2" value="B"> Mereka sudah memperingatkan Belalang sebelumnya</label>
+                        <label><input type="checkbox" name="pgk2_2" value="C"> Belalang tidak mau bekerja</label>
+                        <label><input type="checkbox" name="pgk2_2" value="D"> Mereka ingin Belalang belajar dari kesalahannya</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Nilai-nilai positif apa yang ditunjukkan oleh Semut? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_3" value="A"> Rajin</label>
+                        <label><input type="checkbox" name="pgk2_3" value="B"> Bertanggung jawab</label>
+                        <label><input type="checkbox" name="pgk2_3" value="C"> Pemalas</label>
+                        <label><input type="checkbox" name="pgk2_3" value="D"> Egois</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Apa saja yang bisa kamu pelajari dari kisah Semut dan Belalang? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_4" value="A"> Pentingnya persiapan</label>
+                        <label><input type="checkbox" name="pgk2_4" value="B"> Nilai kerja keras</label>
+                        <label><input type="checkbox" name="pgk2_4" value="C"> Bersenang-senang itu utama</label>
+                        <label><input type="checkbox" name="pgk2_4" value="D"> Menunda pekerjaan</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Ciri-ciri cerita fiksi yang ada dalam kisah ini adalah... (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_5" value="A"> Tokohnya binatang yang bisa bicara</label>
+                        <label><input type="checkbox" name="pgk2_5" value="B"> Mengandung pesan moral</label>
+                        <label><input type="checkbox" name="pgk2_5" value="C"> Berdasarkan fakta ilmiah</label>
+                        <label><input type="checkbox" name="pgk2_5" value="D"> Menggunakan data statistik</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 6 -->
+                    <div class="question-block">
+                        <p class="question-text">6. Bagaimana perasaan Belalang saat musim panas? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_6" value="A"> Senang</label>
+                        <label><input type="checkbox" name="pgk2_6" value="B"> Santai</label>
+                        <label><input type="checkbox" name="pgk2_6" value="C"> Khawatir</label>
+                        <label><input type="checkbox" name="pgk2_6" value="D"> Lelah</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 7 -->
+                    <div class="question-block">
+                        <p class="question-text">7. Apa saja yang menjadi masalah bagi Belalang di musim dingin? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_7" value="A"> Salju tebal</label>
+                        <label><input type="checkbox" name="pgk2_7" value="B"> Kelaparan</label>
+                        <label><input type="checkbox" name="pgk2_7" value="C"> Kedinginan</label>
+                        <label><input type="checkbox" name="pgk2_7" value="D"> Banyak makanan</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 8 -->
+                    <div class="question-block">
+                        <p class="question-text">8. Jika kamu adalah Belalang, apa yang akan kamu lakukan setelah belajar pelajaran ini? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_8" value="A"> Mulai bekerja keras</label>
+                        <label><input type="checkbox" name="pgk2_8" value="B"> Bersiap untuk masa depan</label>
+                        <label><input type="checkbox" name="pgk2_8" value="C"> Tetap bermalas-malasan</label>
+                        <label><input type="checkbox" name="pgk2_8" value="D"> Menyesali perbuatan</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 9 -->
+                    <div class="question-block">
+                        <p class="question-text">9. Kisah ini cocok untuk diajarkan kepada anak-anak karena... (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_9" value="A"> Mudah dipahami</label>
+                        <label><input type="checkbox" name="pgk2_9" value="B"> Memberikan pelajaran hidup</label>
+                        <label><input type="checkbox" name="pgk2_9" value="C"> Mengandung banyak angka</label>
+                        <label><input type="checkbox" name="pgk2_9" value="D"> Penuh konflik</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 10 -->
+                    <div class="question-block">
+                        <p class="question-text">10. Apa yang akan terjadi jika Semut juga bermalas-malasan seperti Belalang? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_10" value="A"> Mereka akan kelaparan</label>
+                        <label><input type="checkbox" name="pgk2_10" value="B"> Mereka akan kedinginan</label>
+                        <label><input type="checkbox" name="pgk2_10" value="C"> Mereka akan tetap kenyang</label>
+                        <label><input type="checkbox" name="pgk2_10" value="D"> Mereka akan berpesta</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 11 -->
+                    <div class="question-block">
+                        <p class="question-text">11. Apa saja yang dapat kamu lakukan untuk mencontoh sikap Semut? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_11" value="A"> Rajin belajar</label>
+                        <label><input type="checkbox" name="pgk2_11" value="B"> Menabung uang</label>
+                        <label><input type="checkbox" name="pgk2_11" value="C"> Menunda tugas</label>
+                        <label><input type="checkbox" name="pgk2_11" value="D"> Berbagi dengan teman</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 12 -->
+                    <div class="question-block">
+                        <p class="question-text">12. Mengapa penting untuk bersiap menghadapi masa depan? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_12" value="A"> Agar tidak kesulitan</label>
+                        <label><input type="checkbox" name="pgk2_12" value="B"> Agar bisa menikmati hasil kerja keras</label>
+                        <label><input type="checkbox" name="pgk2_12" value="C"> Agar bisa bermalas-malasan nanti</label>
+                        <label><input type="checkbox" name="pgk2_12" value="D"> Agar bisa meminta bantuan</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 13 -->
+                    <div class="question-block">
+                        <p class="question-text">13. Ciri-ciri Belalang dalam cerita ini adalah... (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_13" value="A"> Pemalas</label>
+                        <label><input type="checkbox" name="pgk2_13" value="B"> Tidak peduli</label>
+                        <label><input type="checkbox" name="pgk2_13" value="C"> Rajin</label>
+                        <label><input type="checkbox" name="pgk2_13" value="D"> Bijaksana</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 14 -->
+                    <div class="question-block">
+                        <p class="question-text">14. Apa yang membedakan Belalang dengan Semut? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_14" value="A"> Belalang suka bernyanyi</label>
+                        <label><input type="checkbox" name="pgk2_14" value="B"> Semut suka bekerja</label>
+                        <label><input type="checkbox" name="pgk2_14" value="C"> Belalang tidak punya sarang</label>
+                        <label><input type="checkbox" name="pgk2_14" value="D"> Semut selalu berbagi</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 2 - 15 -->
+                    <div class="question-block">
+                        <p class="question-text">15. Kalimat yang menunjukkan penyesalan Belalang adalah... (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk2_15" value="A"> "Belalang hanya tertawa."</label>
+                        <label><input type="checkbox" name="pgk2_15" value="B"> "Belalang sangat menyesal."</label>
+                        <label><input type="checkbox" name="pgk2_15" value="C"> "Ia belajar pelajaran penting."</label>
+                        <label><input type="checkbox" name="pgk2_15" value="D"> "Tolong, Semut! Aku kelaparan."</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan2', 'PGK')">Periksa Jawaban Pilihan Ganda Kompleks Latihan 2</button>
+                    <div id="resultPGK2" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Isian Singkat Latihan 2</h3>
+                <form id="quizFormIsian2">
+                    <!-- Soal Isian Latihan 2 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Di musim panas, Belalang menghabiskan waktunya dengan bernyanyi dan <input type="text" id="isian2_1" name="isian2_1">.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 2 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Semut mengumpulkan makanan untuk persediaan di musim <input type="text" id="isian2_2" name="isian2_2">.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 2 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Saat musim dingin tiba, Belalang mulai <input type="text" id="isian2_3" name="isian2_3"> karena tidak punya makanan.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 2 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Belalang pergi ke <input type="text" id="isian2_4" name="isian2_4"> Semut untuk meminta makanan.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 2 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Kisah ini mengajarkan pentingnya kerja keras dan <input type="text" id="isian2_5" name="isian2_5">.</p>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan2', 'Isian')">Periksa Jawaban Isian Singkat Latihan 2</button>
+                    <div id="resultIsian2" class="quiz-result"></div>
+                    <button type="button" class="quiz-button" onclick="goToMenu()">Kembali ke Menu Latihan</button>
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Asesmen Literasi & Numerasi. Semua Hak Dilindungi.</p>
+        </footer>
+    </div>
+
+    <!-- Konten Asesmen Latihan 3 -->
+    <div class="container page-content" id="latihan3Quiz">
+        <header>
+            <h1>Asesmen Literasi & Numerasi</h1>
+            <h2>Latihan 3: Petualangan Kucing Oren dan Tikus Cerdik</h2>
+        </header>
+        <main>
+            <section class="story-section">
+                <h3>Kisah Kucing Oren dan Tikus Cerdik</h3>
+                <div class="story-content">
+                    <p>Di sebuah rumah tua yang sunyi, hiduplah seekor kucing oranye bernama Oren. Oren adalah kucing yang pemalas dan suka tidur. Sebagian besar waktunya dihabiskan untuk bermalas-malasan di sofa empuk. Di rumah itu juga tinggal seekor tikus kecil yang sangat cerdik bernama Ciko. Ciko selalu berhati-hati dan sangat pandai mencari makanan tanpa ketahuan Oren.</p>
+                    <p>Suatu pagi, Oren terbangun dengan perut keroncongan. Ia sudah lama tidak berburu karena terlalu malas. 'Aduh, aku lapar sekali! Tapi malas sekali mencari makanan,' keluh Oren. Tiba-tiba, ia melihat Ciko sedang membawa sepotong keju besar menuju lubangnya. Mata Oren langsung berbinar. 'Aha! Aku akan menangkap Ciko dan mengambil kejunya!' pikir Oren.</p>
+                    <p>Oren segera menyusun rencana. Ia tahu Ciko sangat lincah. Pertama, ia mencoba mengendap-endap. Namun, langkahnya terlalu berisik dan Ciko langsung melesat masuk ke lubang. Oren mendengus kesal. 'Tikus itu terlalu cepat!'</p>
+                    <p>Oren tidak menyerah. Ia berpikir lebih keras. Ia melihat sebuah ember kosong dan seutas tali di sudut ruangan. Oren mendapat ide. Ia mengikat tali pada gagang ember, lalu meletakkan sepotong biskuit sebagai umpan di bawah ember yang terbalik. Ujung tali ia pegang dari kejauhan.</p>
+                    <p>Ciko yang lapar mencium aroma biskuit. Ia keluar dari lubangnya dengan hati-hati. Melihat biskuit di bawah ember, ia sedikit curiga. Namun, rasa lapar mengalahkannya. Ciko pun masuk ke bawah ember. Tepat saat Ciko menyentuh biskuit, Oren menarik tali dengan cepat! Ember itu langsung menutup Ciko di dalamnya.</p>
+                    <p>'Hore! Aku berhasil!' seru Oren gembira. Ia mendekati ember, siap menikmati biskuit dan mungkin Ciko juga. Tapi, saat Oren mengangkat ember, Ciko sudah tidak ada! Ternyata, Ciko sudah menggali lubang kecil di bawah tanah di dalam ember dan melarikan diri dengan biskuitnya.</p>
+                    <p>Oren terdiam. Ia sangat terkejut dan sedikit kagum. 'Tikus itu memang cerdik sekali,' gumam Oren. Sejak hari itu, Oren tidak lagi meremehkan Ciko. Ia menyadari bahwa kecerdikan bisa mengalahkan kekuatan. Oren pun memutuskan untuk menjadi kucing yang lebih rajin dan tidak hanya mengandalkan keberuntungan.</p>
+                </div>
+            </section>
+
+            <section class="quiz-section">
+                <h3>Soal Pilihan Ganda Latihan 3</h3>
+                <form id="quizFormPG3">
+                    <!-- Soal PG Latihan 3 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Siapakah nama kucing oranye dalam cerita ini?</p>
+                        <label><input type="radio" name="pg3_1" value="A"> A. Ciko</label>
+                        <label><input type="radio" name="pg3_1" value="B"> B. Oren</label>
+                        <label><input type="radio" name="pg3_1" value="C"> C. Pipit</label>
+                        <label><input type="radio" name="pg3_1" value="D"> D. Belalang</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 3 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Bagaimana sifat Oren pada awal cerita?</p>
+                        <label><input type="radio" name="pg3_2" value="A"> A. Rajin</label>
+                        <label><input type="radio" name="pg3_2" value="B"> B. Pemalas</label>
+                        <label><input type="radio" name="pg3_2" value="C"> C. Pemberani</label>
+                        <label><input type="radio" name="pg3_2" value="D"> D. Cerdik</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 3 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Apa yang membuat Oren ingin menangkap Ciko?</p>
+                        <label><input type="radio" name="pg3_3" value="A"> A. Ingin bermain</label>
+                        <label><input type="radio" name="pg3_3" value="B"> B. Perutnya lapar dan melihat Ciko membawa keju</label>
+                        <label><input type="radio" name="pg3_3" value="C"> C. Ciko mengganggu tidurnya</label>
+                        <label><input type="radio" name="pg3_3" value="D"> D. Ingin berteman</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 3 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Apa alat yang digunakan Oren untuk menjebak Ciko pada percobaan kedua?</p>
+                        <label><input type="radio" name="pg3_4" value="A"> A. Jaring</label>
+                        <label><input type="radio" name="pg3_4" value="B"> B. Ember dan tali</label>
+                        <label><input type="radio" name="pg3_4" value="C"> C. Perangkap tikus</label>
+                        <label><input type="radio" name="pg3_4" value="D"> D. Tangan kosong</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 3 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Pelajaran apa yang didapat Oren di akhir cerita?</p>
+                        <label><input type="radio" name="pg3_5" value="A"> A. Kekuatan selalu menang</label>
+                        <label><input type="radio" name="pg3_5" value="B"> B. Kecerdikan bisa mengalahkan kekuatan</label>
+                        <label><input type="radio" name="pg3_5" value="C"> C. Malas itu baik</label>
+                        <label><input type="radio" name="pg3_5" value="D"> D. Tikus itu bodoh</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan3', 'PG')">Periksa Jawaban Pilihan Ganda Latihan 3</button>
+                    <div id="resultPG3" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Pilihan Ganda Kompleks Latihan 3</h3>
+                <form id="quizFormPGK3">
+                    <!-- Soal PGK Latihan 3 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Ciri-ciri Oren di awal cerita adalah... (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk3_1" value="A"> Pemalas</label>
+                        <label><input type="checkbox" name="pgk3_1" value="B"> Suka tidur</label>
+                        <label><input type="checkbox" name="pgk3_1" value="C"> Rajin berburu</label>
+                        <label><input type="checkbox" name="pgk3_1" value="D"> Cerdik</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 3 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Mengapa Ciko sulit ditangkap oleh Oren pada percobaan pertama? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk3_2" value="A"> Ciko sangat lincah</label>
+                        <label><input type="checkbox" name="pgk3_2" value="B"> Langkah Oren terlalu berisik</label>
+                        <label><input type="checkbox" name="pgk3_2" value="C"> Ciko tidak takut</label>
+                        <label><input type="checkbox" name="pgk3_2" value="D"> Oren terlalu cepat</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 3 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Apa saja yang dilakukan Oren untuk menjebak Ciko pada percobaan kedua? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk3_3" value="A"> Mengikat tali pada gagang ember</label>
+                        <label><input type="checkbox" name="pgk3_3" value="B"> Meletakkan biskuit sebagai umpan</label>
+                        <label><input type="checkbox" name="pgk3_3" value="C"> Menggali lubang</label>
+                        <label><input type="checkbox" name="pgk3_3" value="D"> Memanggil teman</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 3 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Bagaimana Ciko bisa melarikan diri dari jebakan Oren? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk3_4" value="A"> Menggali lubang kecil di bawah tanah</label>
+                        <label><input type="checkbox" name="pgk3_4" value="B"> Melarikan diri dengan biskuitnya</label>
+                        <label><input type="checkbox" name="pgk3_4" value="C"> Meminta bantuan</label>
+                        <label><input type="checkbox" name="pgk3_4" value="D"> Memecahkan ember</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 3 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Sikap apa yang patut dicontoh dari Ciko? (Pilih lebih dari satu jawaban)</p>
+                        <label><input type="checkbox" name="pgk3_5" value="A"> Cerdik</label>
+                        <label><input type="checkbox" name="pgk3_5" value="B"> Berhati-hati</label>
+                        <label><input type="checkbox" name="pgk3_5" value="C"> Pandai mencari makanan</label>
+                        <label><input type="checkbox" name="pgk3_5" value="D"> Pemalas</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan3', 'PGK')">Periksa Jawaban Pilihan Ganda Kompleks Latihan 3</button>
+                    <div id="resultPGK3" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Menjodohkan Latihan 3</h3>
+                <form id="quizFormMatching3">
+                    <div class="question-block">
+                        <p class="question-text">Jodohkan kata di kiri dengan deskripsi yang sesuai di kanan!</p>
+                        <div class="matching-question">
+                            <div class="matching-row">
+                                <span>1. Oren</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match3_1" name="match3_1">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Tikus Cerdik</option>
+                                    <option value="B">Kucing Oranye</option>
+                                    <option value="C">Makanan Ciko</option>
+                                    <option value="D">Alat Jebakan</option>
+                                    <option value="E">Tempat Persembunyian</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>2. Ciko</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match3_2" name="match3_2">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Tikus Cerdik</option>
+                                    <option value="B">Kucing Oranye</option>
+                                    <option value="C">Makanan Ciko</option>
+                                    <option value="D">Alat Jebakan</option>
+                                    <option value="E">Tempat Persembunyian</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>3. Keju</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match3_3" name="match3_3">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Tikus Cerdik</option>
+                                    <option value="B">Kucing Oranye</option>
+                                    <option value="C">Makanan Ciko</option>
+                                    <option value="D">Alat Jebakan</option>
+                                    <option value="E">Tempat Persembunyian</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>4. Ember</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match3_4" name="match3_4">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Tikus Cerdik</option>
+                                    <option value="B">Kucing Oranye</option>
+                                    <option value="C">Makanan Ciko</option>
+                                    <option value="D">Alat Jebakan</option>
+                                    <option value="E">Tempat Persembunyian</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>5. Lubang</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match3_5" name="match3_5">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Tikus Cerdik</option>
+                                    <option value="B">Kucing Oranye</option>
+                                    <option value="C">Makanan Ciko</option>
+                                    <option value="D">Alat Jebakan</option>
+                                    <option value="E">Tempat Persembunyian</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan3', 'Matching')">Periksa Jawaban Menjodohkan Latihan 3</button>
+                    <div id="resultMatching3" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Isian Singkat Latihan 3</h3>
+                <form id="quizFormIsian3">
+                    <!-- Soal Isian Latihan 3 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Oren adalah seekor kucing yang suka <input type="text" id="isian3_1" name="isian3_1">.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 3 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Ciko selalu berhati-hati dan sangat pandai mencari makanan tanpa <input type="text" id="isian3_2" name="isian3_2"> Oren.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 3 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Oren mencoba menjebak Ciko dengan sebuah ember dan seutas <input type="text" id="isian3_3" name="isian3_3">.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 3 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Ciko berhasil melarikan diri dengan menggali <input type="text" id="isian3_4" name="isian3_4"> kecil di bawah tanah.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 3 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Di akhir cerita, Oren menyadari bahwa <input type="text" id="isian3_5" name="isian3_5"> bisa mengalahkan kekuatan.</p>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan3', 'Isian')">Periksa Jawaban Isian Singkat Latihan 3</button>
+                    <div id="resultIsian3" class="quiz-result"></div>
+                    <button type="button" class="quiz-button" onclick="goToMenu()">Kembali ke Menu Latihan</button>
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Asesmen Literasi & Numerasi. Semua Hak Dilindungi.</p>
+        </footer>
+    </div>
+
+    <!-- Konten Asesmen Latihan 4 -->
+    <div class="container page-content" id="latihan4Quiz">
+        <header>
+            <h1>Asesmen Literasi & Numerasi</h1>
+            <h2>Latihan 4: Tupai Cerdas dan Burung Hantu Bijaksana</h2>
+        </header>
+        <main>
+            <section class="story-section">
+                <h3>Kisah Tupai Cerdas dan Burung Hantu Bijaksana</h3>
+                <div class="story-content">
+                    <p>Di puncak pohon ek yang menjulang tinggi, hiduplah seekor tupai muda bernama Siki. Siki sangat lincah dan selalu ingin tahu. Setiap hari, ia menjelajahi hutan, melompat dari dahan ke dahan, dan mengumpulkan biji-bijian. Namun, Siki sering merasa bingung dengan banyak hal yang dilihatnya. Ia bertanya-tanya mengapa daun berubah warna, mengapa sungai mengalir tanpa henti, atau mengapa bintang-bintang bersinar di malam hari.</p>
+                    <p>Di pohon beringin tua yang rindang, tak jauh dari pohon ek Siki, tinggallah seekor burung hantu tua bernama Bubo. Bubo dikenal sebagai makhluk paling bijaksana di seluruh hutan. Matanya yang besar dan kuning selalu tampak penuh pengetahuan, dan ia jarang berbicara kecuali ada hal penting. Hewan-hewan lain sering datang kepadanya untuk meminta nasihat.</p>
+                    <p>Suatu sore, Siki merasa sangat penasaran tentang mengapa matahari terbit dan terbenam setiap hari. Ia tidak bisa menemukan jawabannya sendiri. Dengan memberanikan diri, Siki melompat ke pohon beringin dan mendekati Bubo. "Burung Hantu Bubo yang bijaksana," sapa Siki dengan hormat, "Aku punya banyak pertanyaan yang tidak bisa kujawab. Bisakah kau membantuku memahami dunia ini?"</p>
+                    <p>Bubo membuka matanya yang besar dan menatap Siki. "Pengetahuan adalah harta yang tak ternilai, Siki. Bertanyalah, dan aku akan berbagi apa yang aku tahu." Bubo menjelaskan tentang perputaran bumi, tentang siklus alam, dan tentang keseimbangan ekosistem hutan. Ia tidak hanya memberikan jawaban, tetapi juga mendorong Siki untuk terus mengamati dan berpikir kritis.</p>
+                    <p>Siki mendengarkan dengan saksama. Ia merasa seolah-olah tirai yang menutupi matanya telah terbuka. Ia belajar bahwa setiap fenomena di alam memiliki alasan dan keterkaitan. Dari Bubo, Siki tidak hanya mendapatkan jawaban, tetapi juga semangat untuk terus belajar dan tidak pernah berhenti bertanya. Sejak hari itu, Siki menjadi tupai yang lebih cerdas, selalu mengamati, dan sering berbagi pengetahuannya dengan tupai-tupai muda lainnya. Ia memahami bahwa belajar adalah perjalanan seumur hidup.</p>
+                </div>
+            </section>
+
+            <section class="quiz-section">
+                <h3>Soal Pilihan Ganda Latihan 4</h3>
+                <form id="quizFormPG4">
+                    <!-- Soal PG Latihan 4 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Siapakah nama tupai muda dalam cerita?</p>
+                        <label><input type="radio" name="pg4_1" value="A"> A. Bubo</label>
+                        <label><input type="radio" name="pg4_1" value="B"> B. Siki</label>
+                        <label><input type="radio" name="pg4_1" value="C"> C. Oren</label>
+                        <label><input type="radio" name="pg4_1" value="D"> D. Ciko</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 4 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Di mana burung hantu Bubo tinggal?</p>
+                        <label><input type="radio" name="pg4_2" value="A"> A. Di lubang tanah</label>
+                        <label><input type="radio" name="pg4_2" value="B"> B. Di pohon ek</label>
+                        <label><input type="radio" name="pg4_2" value="C"> C. Di pohon beringin tua</label>
+                        <label><input type="radio" name="pg4_2" value="D"> D. Di sungai</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 4 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Apa yang sering dilakukan Siki setiap hari?</p>
+                        <label><input type="radio" name="pg4_3" value="A"> A. Tidur</label>
+                        <label><input type="radio" name="pg4_3" value="B"> B. Mengumpulkan biji-bijian</label>
+                        <label><input type="radio" name="pg4_3" value="C"> C. Bernyanyi</label>
+                        <label><input type="radio" name="pg4_3" value="D"> D. Berburu</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 4 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Mengapa hewan-hewan lain sering datang kepada Bubo?</p>
+                        <label><input type="radio" name="pg4_4" value="A"> A. Untuk bermain</label>
+                        <label><input type="radio" name="pg4_4" value="B"> B. Untuk meminta makanan</label>
+                        <label><input type="radio" name="pg4_4" value="C"> C. Untuk meminta nasihat</label>
+                        <label><input type="radio" name="pg4_4" value="D"> D. Untuk bernyanyi bersama</label>
+                    </div>
+
+                    <!-- Soal PG Latihan 4 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Apa yang dipelajari Siki tentang pengetahuan?</p>
+                        <label><input type="radio" name="pg4_5" value="A"> A. Pengetahuan itu tidak penting</label>
+                        <label><input type="radio" name="pg4_5" value="B"> B. Pengetahuan adalah harta yang tak ternilai</label>
+                        <label><input type="radio" name="pg4_5" value="C"> C. Pengetahuan itu membingungkan</label>
+                        <label><input type="radio" name="pg4_5" value="D"> D. Pengetahuan hanya untuk Bubo</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan4', 'PG')">Periksa Jawaban Pilihan Ganda Latihan 4</button>
+                    <div id="resultPG4" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Pilihan Ganda Kompleks Latihan 4</h3>
+                <form id="quizFormPGK4">
+                    <!-- Soal PGK Latihan 4 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Ciri-ciri Siki di awal cerita adalah... (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk4_1" value="A"> Lincah</label>
+                        <label><input type="checkbox" name="pgk4_1" value="B"> Selalu ingin tahu</label>
+                        <label><input type="checkbox" name="pgk4_1" value="C"> Pemalas</label>
+                        <label><input type="checkbox" name="pgk4_1" value="D"> Tidak peduli</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 4 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Apa saja yang dijelaskan Bubo kepada Siki? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk4_2" value="A"> Perputaran bumi</label>
+                        <label><input type="checkbox" name="pgk4_2" value="B"> Siklus alam</label>
+                        <label><input type="checkbox" name="pgk4_2" value="C"> Keseimbangan ekosistem hutan</label>
+                        <label><input type="checkbox" name="pgk4_2" value="D"> Cara berburu makanan</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 4 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Apa yang didapatkan Siki dari Bubo selain jawaban? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk4_3" value="A"> Semangat untuk terus belajar</label>
+                        <label><input type="checkbox" name="pgk4_3" value="B"> Dorongan untuk berpikir kritis</label>
+                        <label><input type="checkbox" name="pgk4_3" value="C"> Makanan</label>
+                        <label><input type="checkbox" name="pgk4_3" value="D"> Teman bermain</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 4 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Bagaimana perubahan sikap Siki setelah bertemu Bubo? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk4_4" value="A"> Menjadi lebih cerdas</label>
+                        <label><input type="checkbox" name="pgk4_4" value="B"> Selalu mengamati</label>
+                        <label><input type="checkbox" name="pgk4_4" value="C"> Sering berbagi pengetahuan</label>
+                        <label><input type="checkbox" name="pgk4_4" value="D"> Menjadi lebih pemalas</label>
+                    </div>
+
+                    <!-- Soal PGK Latihan 4 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Apa saja yang membuat Siki merasa bingung di awal cerita? (Pilih lebih dari satu)</p>
+                        <label><input type="checkbox" name="pgk4_5" value="A"> Mengapa daun berubah warna</label>
+                        <label><input type="checkbox" name="pgk4_5" value="B"> Mengapa sungai mengalir tanpa henti</label>
+                        <label><input type="checkbox" name="pgk4_5" value="C"> Mengapa bintang-bintang bersinar</label>
+                        <label><input type="checkbox" name="pgk4_5" value="D"> Mengapa Bubo suka tidur</label>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan4', 'PGK')">Periksa Jawaban Pilihan Ganda Kompleks Latihan 4</button>
+                    <div id="resultPGK4" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Menjodohkan Latihan 4</h3>
+                <form id="quizFormMatching4">
+                    <div class="question-block">
+                        <p class="question-text">Jodohkan kata di kiri dengan deskripsi yang sesuai di kanan!</p>
+                        <div class="matching-question">
+                            <div class="matching-row">
+                                <span>1. Siki</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match4_1" name="match4_1">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Burung Hantu Bijaksana</option>
+                                    <option value="B">Tupai Muda yang Ingin Tahu</option>
+                                    <option value="C">Tempat Tinggal Siki</option>
+                                    <option value="D">Harta Tak Ternilai</option>
+                                    <option value="E">Tempat Tinggal Bubo</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>2. Bubo</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match4_2" name="match4_2">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Burung Hantu Bijaksana</option>
+                                    <option value="B">Tupai Muda yang Ingin Tahu</option>
+                                    <option value="C">Tempat Tinggal Siki</option>
+                                    <option value="D">Harta Tak Ternilai</option>
+                                    <option value="E">Tempat Tinggal Bubo</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>3. Pohon Ek</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match4_3" name="match4_3">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Burung Hantu Bijaksana</option>
+                                    <option value="B">Tupai Muda yang Ingin Tahu</option>
+                                    <option value="C">Tempat Tinggal Siki</option>
+                                    <option value="D">Harta Tak Ternilai</option>
+                                    <option value="E">Tempat Tinggal Bubo</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>4. Pohon Beringin</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match4_4" name="match4_4">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Burung Hantu Bijaksana</option>
+                                    <option value="B">Tupai Muda yang Ingin Tahu</option>
+                                    <option value="C">Tempat Tinggal Siki</option>
+                                    <option value="D">Harta Tak Ternilai</option>
+                                    <option value="E">Tempat Tinggal Bubo</option>
+                                </select>
+                            </div>
+                            <div class="matching-row">
+                                <span>5. Pengetahuan</span>
+                                <span class="arrow">&#8594;</span>
+                                <select id="match4_5" name="match4_5">
+                                    <option value="">Pilih...</option>
+                                    <option value="A">Burung Hantu Bijaksana</option>
+                                    <option value="B">Tupai Muda yang Ingin Tahu</option>
+                                    <option value="C">Tempat Tinggal Siki</option>
+                                    <option value="D">Harta Tak Ternilai</option>
+                                    <option value="E">Tempat Tinggal Bubo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan4', 'Matching')">Periksa Jawaban Menjodohkan Latihan 4</button>
+                    <div id="resultMatching4" class="quiz-result"></div>
+                </form>
+
+                <h3>Soal Isian Singkat Latihan 4</h3>
+                <form id="quizFormIsian4">
+                    <!-- Soal Isian Latihan 4 - 1 -->
+                    <div class="question-block">
+                        <p class="question-text">1. Siki adalah seekor tupai yang sangat lincah dan selalu ingin <input type="text" id="isian4_1" name="isian4_1">.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 4 - 2 -->
+                    <div class="question-block">
+                        <p class="question-text">2. Bubo dikenal sebagai makhluk paling <input type="text" id="isian4_2" name="isian4_2"> di seluruh hutan.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 4 - 3 -->
+                    <div class="question-block">
+                        <p class="question-text">3. Siki merasa sangat penasaran tentang mengapa matahari terbit dan <input type="text" id="isian4_3" name="isian4_3"> setiap hari.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 4 - 4 -->
+                    <div class="question-block">
+                        <p class="question-text">4. Bubo tidak hanya memberikan jawaban, tetapi juga mendorong Siki untuk terus mengamati dan berpikir <input type="text" id="isian4_4" name="isian4_4">.</p>
+                    </div>
+
+                    <!-- Soal Isian Latihan 4 - 5 -->
+                    <div class="question-block">
+                        <p class="question-text">5. Sejak hari itu, Siki menjadi tupai yang lebih cerdas dan sering berbagi <input type="text" id="isian4_5" name="isian4_5">nya dengan tupai-tupai muda lainnya.</p>
+                    </div>
+
+                    <button type="button" class="quiz-button" onclick="checkQuiz('latihan4', 'Isian')">Periksa Jawaban Isian Singkat Latihan 4</button>
+                    <div id="resultIsian4" class="quiz-result"></div>
+                    <button type="button" class="quiz-button" onclick="goToMenu()">Kembali ke Menu Latihan</button>
+                </form>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2025 Asesmen Literasi & Numerasi. Semua Hak Dilindungi.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Logika JavaScript untuk interaktivitas soal
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elemen halaman
+            const loginPage = document.getElementById('loginPage');
+            const latihanMenuPage = document.getElementById('latihanMenuPage');
+            const latihan1Quiz = document.getElementById('latihan1Quiz');
+            const latihan2Quiz = document.getElementById('latihan2Quiz');
+            const latihan3Quiz = document.getElementById('latihan3Quiz');
+            const latihan4Quiz = document.getElementById('latihan4Quiz'); // Added Latihan 4
+
+            // Elemen Login Form
+            const loginForm = document.getElementById('loginForm');
+            const fullNameInput = document.getElementById('fullName');
+            const studentIdInput = document.getElementById('studentId');
+            const loginError = document.getElementById('loginError');
+
+            // Elemen Tombol Latihan
+            const btnLatihan1 = document.getElementById('btnLatihan1');
+            const btnLatihan2 = document.getElementById('btnLatihan2');
+            const btnLatihan3 = document.getElementById('btnLatihan3');
+            const btnLatihan4 = document.getElementById('btnLatihan4'); // Added Latihan 4
+
+            // Indikator Status Latihan
+            const statusLatihan1 = document.getElementById('statusLatihan1');
+            const statusLatihan2 = document.getElementById('statusLatihan2');
+            const statusLatihan3 = document.getElementById('statusLatihan3');
+            const statusLatihan4 = document.getElementById('statusLatihan4'); // Added Latihan 4
+
+            // State aplikasi
+            let latihanScores = JSON.parse(localStorage.getItem('latihanScores')) || {
+                latihan1: 0,
+                latihan2: 0,
+                latihan3: 0,
+                latihan4: 0
+            };
+
+            let latihanUnlockedStatus = JSON.parse(localStorage.getItem('latihanUnlockedStatus')) || {
+                latihan1: true, // Latihan 1 selalu terbuka
+                latihan2: false,
+                latihan3: false,
+                latihan4: false
+            };
+
+            // Fungsi untuk menampilkan halaman tertentu dan menyembunyikan yang lain
+            function showPage(pageId) {
+                const pages = document.querySelectorAll('.page-content');
+                pages.forEach(page => {
+                    page.style.display = 'none';
+                });
+                document.getElementById(pageId).style.display = 'block';
+                updateLatihanMenuStatus(); // Perbarui status tombol setiap kali menu ditampilkan
+            }
+
+            // Fungsi untuk memperbarui status tombol di menu latihan
+            function updateLatihanMenuStatus() {
+                // Latihan 1
+                if (latihanScores.latihan1 > 0) {
+                    statusLatihan1.textContent = `Skor: ${latihanScores.latihan1.toFixed(0)}`;
+                    btnLatihan1.classList.add('completed');
+                } else {
+                    statusLatihan1.textContent = 'Mulai';
+                    btnLatihan1.classList.remove('completed');
+                }
+
+                // Latihan 2
+                if (latihanUnlockedStatus.latihan2) {
+                    btnLatihan2.disabled = false;
+                    btnLatihan2.classList.add('unlocked');
+                    if (latihanScores.latihan2 > 0) {
+                        statusLatihan2.textContent = `Skor: ${latihanScores.latihan2.toFixed(0)}`;
+                        btnLatihan2.classList.add('completed');
+                    } else {
+                        statusLatihan2.textContent = 'Mulai';
+                        btnLatihan2.classList.remove('completed');
+                    }
+                } else {
+                    btnLatihan2.disabled = true;
+                    btnLatihan2.classList.remove('unlocked', 'completed');
+                    statusLatihan2.textContent = 'Terkunci';
+                }
+
+                // Latihan 3
+                if (latihanUnlockedStatus.latihan3) {
+                    btnLatihan3.disabled = false;
+                    btnLatihan3.classList.add('unlocked');
+                    if (latihanScores.latihan3 > 0) {
+                        statusLatihan3.textContent = `Skor: ${latihanScores.latihan3.toFixed(0)}`;
+                        btnLatihan3.classList.add('completed');
+                    } else {
+                        statusLatihan3.textContent = 'Mulai';
+                        btnLatihan3.classList.remove('completed');
+                    }
+                } else {
+                    btnLatihan3.disabled = true;
+                    btnLatihan3.classList.remove('unlocked', 'completed');
+                    statusLatihan3.textContent = 'Terkunci';
+                }
+
+                // Latihan 4
+                if (latihanUnlockedStatus.latihan4) {
+                    btnLatihan4.disabled = false;
+                    btnLatihan4.classList.add('unlocked');
+                    if (latihanScores.latihan4 > 0) {
+                        statusLatihan4.textContent = `Skor: ${latihanScores.latihan4.toFixed(0)}`;
+                        btnLatihan4.classList.add('completed');
+                    } else {
+                        statusLatihan4.textContent = 'Mulai';
+                        btnLatihan4.classList.remove('completed');
+                    }
+                } else {
+                    btnLatihan4.disabled = true;
+                    btnLatihan4.classList.remove('unlocked', 'completed');
+                    statusLatihan4.textContent = 'Terkunci';
+                }
+            }
+
+            // Inisialisasi tampilan halaman (mulai dari login)
+            showPage('loginPage');
+
+            // Fungsi untuk menangani login
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Mencegah form submit default
+
+                const fullName = fullNameInput.value.trim();
+                const studentId = studentIdInput.value.trim();
+
+                if (fullName === '') {
+                    loginError.textContent = 'Nama Lengkap tidak boleh kosong.';
+                    loginError.classList.add('show');
+                } else {
+                    loginError.classList.remove('show');
+                    localStorage.setItem('studentFullName', fullName);
+                    localStorage.setItem('studentId', studentId);
+                    showPage('latihanMenuPage'); // Tampilkan halaman menu setelah login berhasil
+                }
+            });
+
+            // Event listener untuk tombol latihan
+            btnLatihan1.addEventListener('click', () => showPage('latihan1Quiz'));
+            btnLatihan2.addEventListener('click', () => {
+                if (latihanUnlockedStatus.latihan2) {
+                    showPage('latihan2Quiz');
+                }
+            });
+            btnLatihan3.addEventListener('click', () => {
+                if (latihanUnlockedStatus.latihan3) {
+                    showPage('latihan3Quiz');
+                }
+            });
+            btnLatihan4.addEventListener('click', () => {
+                if (latihanUnlockedStatus.latihan4) {
+                    showPage('latihan4Quiz');
+                }
+            });
+
+            // Fungsi untuk kembali ke menu latihan
+            window.goToMenu = function() {
+                showPage('latihanMenuPage');
+            };
+
+            // --- Definisi Jawaban Benar ---
+            const quizAnswers = {
+                latihan1: {
+                    PG: {
+                        pg1_1: 'C', pg1_2: 'D', pg1_3: 'B', pg1_4: 'C', pg1_5: 'B',
+                        pg1_6: 'C', pg1_7: 'C', pg1_8: 'B', pg1_9: 'C', pg1_10: 'C',
+                        pg1_11: 'B', pg1_12: 'B', pg1_13: 'C', pg1_14: 'C', pg1_15: 'B'
+                    },
+                    PGK: {
+                        pgk1_1: ['A', 'C'], pgk1_2: ['A', 'B'], pgk1_3: ['A', 'B'], pgk1_4: ['A', 'B'], pgk1_5: ['A', 'B'],
+                        pgk1_6: ['A', 'B'], pgk1_7: ['A', 'B'], pgk1_8: ['A', 'B'], pgk1_9: ['A', 'B'], pgk1_10: ['A', 'B'],
+                        pgk1_11: ['A', 'B'], pgk1_12: ['A', 'B'], pgk1_13: ['A', 'B'], pgk1_14: ['A', 'B'], pgk1_15: ['A', 'B']
+                    },
+                    Isian: {
+                        isian1_1: 'kerikil', isian1_2: 'kemarau', isian1_3: ['peduli', 'berbagi'],
+                        isian1_4: 'kreativitas', isian1_5: ['bahagia', 'lega']
+                    }
+                },
+                latihan2: {
+                    PG: {
+                        pg2_1: 'C', pg2_2: 'C', pg2_3: 'B', pg2_4: 'B', pg2_5: 'D',
+                        pg2_6: 'B', pg2_7: 'B', pg2_8: 'B', pg2_9: 'B', pg2_10: 'A',
+                        pg2_11: 'C', pg2_12: 'C', pg2_13: 'C', pg2_14: 'B', pg2_15: 'C'
+                    },
+                    PGK: {
+                        pgk2_1: ['A', 'B'], pgk2_2: ['B', 'D'], pgk2_3: ['A', 'B'], pgk2_4: ['A', 'B'], pgk2_5: ['A', 'B'],
+                        pgk2_6: ['A', 'B'], pgk2_7: ['A', 'B', 'C'], pgk2_8: ['A', 'B'], pgk2_9: ['A', 'B'], pgk2_10: ['A', 'B'],
+                        pgk2_11: ['A', 'B'], pgk2_12: ['A', 'B'], pgk2_13: ['A', 'B'], pgk2_14: ['A', 'B'], pgk2_15: ['B', 'C']
+                    },
+                    Isian: {
+                        isian2_1: 'bermain', isian2_2: 'dingin', isian2_3: 'kelaparan',
+                        isian2_4: 'sarang', isian2_5: 'persiapan'
+                    }
+                },
+                latihan3: {
+                    PG: {
+                        pg3_1: 'B', pg3_2: 'B', pg3_3: 'B', pg3_4: 'B', pg3_5: 'B'
+                    },
+                    PGK: {
+                        pgk3_1: ['A', 'B'], pgk3_2: ['A', 'B'], pgk3_3: ['A', 'B'], pgk3_4: ['A', 'B'], pgk3_5: ['A', 'B', 'C']
+                    },
+                    Matching: {
+                        match3_1: 'B', // Oren -> Kucing Oranye
+                        match3_2: 'A', // Ciko -> Tikus Cerdik
+                        match3_3: 'C', // Keju -> Makanan Ciko
+                        match3_4: 'D', // Ember -> Alat Jebakan
+                        match3_5: 'E'  // Lubang -> Tempat Persembunyian
+                    },
+                    Isian: {
+                        isian3_1: ['tidur', 'bermalas-malasan'],
+                        isian3_2: 'ketahuan',
+                        isian3_3: 'tali',
+                        isian3_4: 'lubang',
+                        isian3_5: 'kecerdikan'
+                    }
+                },
+                latihan4: { // New Latihan 4 answers
+                    PG: {
+                        pg4_1: 'B', pg4_2: 'C', pg4_3: 'B', pg4_4: 'C', pg4_5: 'B'
+                    },
+                    PGK: {
+                        pgk4_1: ['A', 'B'], pg4_2: ['A', 'B', 'C'], pg4_3: ['A', 'B'], pg4_4: ['A', 'B', 'C'], pg4_5: ['A', 'B', 'C']
+                    },
+                    Matching: {
+                        match4_1: 'B', // Siki -> Tupai Muda yang Ingin Tahu
+                        match4_2: 'A', // Bubo -> Burung Hantu Bijaksana
+                        match4_3: 'C', // Pohon Ek -> Tempat Tinggal Siki
+                        match4_4: 'E', // Pohon Beringin -> Tempat Tinggal Bubo
+                        match4_5: 'D'  // Pengetahuan -> Harta Tak Ternilai
+                    },
+                    Isian: {
+                        isian4_1: 'tahu', // ingin tahu
+                        isian4_2: 'bijaksana',
+                        isian4_3: 'terbenam',
+                        isian4_4: 'kritis',
+                        isian4_5: 'pengetahuan'
+                    }
+                }
+            };
+
+            // Fungsi umum untuk memeriksa kuis
+            window.checkQuiz = function(latihanId, quizType) {
+                let score = 0;
+                // Dynamically select form and result div IDs based on latihanId and quizType
+                const formIdSuffix = latihanId.replace('latihan', ''); // Gets '1', '2', '3', '4'
+                const form = document.getElementById(`quizForm${quizType}${formIdSuffix}`);
+                const resultDiv = document.getElementById(`result${quizType}${formIdSuffix}`);
+
+                const answers = quizAnswers[latihanId][quizType];
+                const totalQuestions = Object.keys(answers).length;
+
+                if (quizType === 'PG') {
+                    for (const qKey in answers) {
+                        const selected = form.querySelector(`input[name="${qKey}"]:checked`);
+                        if (selected && selected.value === answers[qKey]) {
+                            score++;
+                        }
+                    }
+                } else if (quizType === 'PGK') {
+                    for (const qKey in answers) {
+                        const selectedOptions = Array.from(form.querySelectorAll(`input[name="${qKey}"]:checked`)).map(input => input.value);
+                        const correctOpts = answers[qKey];
+
+                        const isCorrect = correctOpts.every(val => selectedOptions.includes(val)) &&
+                                          selectedOptions.every(val => correctOpts.includes(val)) &&
+                                          selectedOptions.length === correctOpts.length;
+
+                        if (isCorrect) {
+                            score++;
+                        }
+                    }
+                } else if (quizType === 'Matching') {
+                    for (const qKey in answers) {
+                        const selectedValue = form.querySelector(`#${qKey}`).value;
+                        if (selectedValue === answers[qKey]) {
+                            score++;
+                        }
+                    }
+                } else if (quizType === 'Isian') {
+                    for (const qKey in answers) {
+                        const inputElement = document.getElementById(qKey);
+                        if (inputElement) {
+                            const userAnswer = inputElement.value.toLowerCase().trim();
+                            const correctAns = answers[qKey];
+
+                            if (Array.isArray(correctAns)) {
+                                if (correctAns.includes(userAnswer)) {
+                                    score++;
+                                }
+                            } else {
+                                if (userAnswer === correctAns.toLowerCase()) {
+                                    score++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                const percentageScore = (score / totalQuestions) * 100;
+                resultDiv.textContent = `Skor Anda: ${score} dari ${totalQuestions} (${percentageScore.toFixed(2)}%).`;
+                resultDiv.classList.remove('incorrect', 'correct');
+
+                // Calculate overall score for the entire latihan
+                let totalCorrectLatihan = 0;
+                let totalQuestionsLatihan = 0;
+
+                // Iterate through all quiz types for the current latihan to sum up scores
+                for (const type in quizAnswers[latihanId]) {
+                    const currentAnswers = quizAnswers[latihanId][type];
+                    // Adjust form ID suffix to match the current latihan (e.g., quizFormPG1, quizFormPGK2, quizFormMatching3, quizFormIsian4)
+                    const currentForm = document.getElementById(`quizForm${type}${latihanId.replace('latihan', '')}`);
+
+                    if (!currentForm) continue; // Skip if form not found (e.g., Latihan 3 doesn't have PG1)
+
+                    for (const qKey in currentAnswers) {
+                        if (type === 'PG') {
+                            const selected = currentForm.querySelector(`input[name="${qKey}"]:checked`);
+                            if (selected && selected.value === currentAnswers[qKey]) {
+                                totalCorrectLatihan++;
+                            }
+                        } else if (type === 'PGK') {
+                            const selectedOptions = Array.from(currentForm.querySelectorAll(`input[name="${qKey}"]:checked`)).map(input => input.value);
+                            const correctOpts = currentAnswers[qKey];
+                            const isCorrect = correctOpts.every(val => selectedOptions.includes(val)) &&
+                                              selectedOptions.every(val => correctOpts.includes(val)) &&
+                                              selectedOptions.length === correctOpts.length;
+                            if (isCorrect) {
+                                totalCorrectLatihan++;
+                            }
+                        } else if (type === 'Matching') {
+                            const selectedValue = currentForm.querySelector(`#${qKey}`).value;
+                            if (selectedValue === currentAnswers[qKey]) {
+                                totalCorrectLatihan++;
+                            }
+                        } else if (type === 'Isian') {
+                            const inputElement = currentForm.querySelector(`#${qKey}`); // Use currentForm to find input
+                            if (inputElement) {
+                                const userAnswer = inputElement.value.toLowerCase().trim();
+                                const correctAns = currentAnswers[qKey];
+                                if (Array.isArray(correctAns)) {
+                                    if (correctAns.includes(userAnswer)) {
+                                        totalCorrectLatihan++;
+                                    }
+                                } else {
+                                    if (userAnswer === correctAns.toLowerCase()) {
+                                        totalCorrectLatihan++;
+                                    }
+                                }
+                            }
+                        }
+                        totalQuestionsLatihan++; // Increment for each sub-question
+                    }
+                }
+                
+                const overallPercentageScore = (totalCorrectLatihan / totalQuestionsLatihan) * 100;
+                latihanScores[latihanId] = overallPercentageScore;
+                localStorage.setItem('latihanScores', JSON.stringify(latihanScores));
+
+                // Cek kondisi unlock
+                if (latihanId === 'latihan1' && overallPercentageScore >= 75) {
+                    latihanUnlockedStatus.latihan2 = true;
+                }
+                if (latihanId === 'latihan2' && overallPercentageScore >= 80) {
+                    latihanUnlockedStatus.latihan3 = true;
+                }
+                if (latihanId === 'latihan3' && overallPercentageScore >= 85) {
+                    latihanUnlockedStatus.latihan4 = true;
+                }
+                // No unlock condition for latihan4 as per request, but can be added later
+                localStorage.setItem('latihanUnlockedStatus', JSON.stringify(latihanUnlockedStatus));
+
+                // Update result div color based on overall score for the section
+                if (percentageScore >= (latihanId === 'latihan1' ? 75 : (latihanId === 'latihan2' ? 80 : (latihanId === 'latihan3' ? 85 : 0)))) {
+                    resultDiv.classList.add('correct');
+                } else {
+                    resultDiv.classList.add('incorrect');
+                }
+                resultDiv.classList.add('show');
+                updateLatihanMenuStatus(); // Update menu status after checking quiz
+            };
+        });
+    </script>
+</body>
+</html>
